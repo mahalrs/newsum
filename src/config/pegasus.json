@@ -1,0 +1,6 @@
+{
+    "model_name": "google/pegasus-large",
+    "learning_rate": 5e-5,
+    "weight_decay": 0.01,
+    "warmup_steps_ratio": 0.1
+}
