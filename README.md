@@ -36,6 +36,8 @@ Now run random hyperparameter search:
 python search_hyperparams.py --run_name exp1 --wandb_proj my_proj
 ```
 
+NOTE: If you get a `RuntimeError: tensorflow/compiler/xla/xla_client/computation_client.cc:280 : Missing XLA configuration` error on GCP, just do `pip uninstall torch_xla`.
+
 
 ## Fine-tune
 
