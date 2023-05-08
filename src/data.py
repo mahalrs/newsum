@@ -40,7 +40,7 @@ class CNNDailyMailDataset(Dataset):
         with open(file_path, 'r') as f:
             sample = json.load(f)
             inputs = self.tokenizer(sample['article'],
-                                    max_length=512,
+                                    max_length=256,
                                     truncation=True,
                                     padding='max_length',
                                     return_tensors='pt')
