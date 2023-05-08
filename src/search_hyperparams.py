@@ -181,7 +181,8 @@ def main():
                                  strategy=args.strategy,
                                  devices=args.devices,
                                  log_every_n_steps=args.log_every_n_steps,
-                                 logger=logger)
+                                 logger=logger,
+                                 enable_checkpointing=False)
 
             # Train model
             trainer.fit(model,
