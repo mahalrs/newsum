@@ -5,3 +5,4 @@ datasets
 tqdm
 sentencepiece
 tensorboard
+wandb

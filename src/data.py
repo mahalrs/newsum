@@ -20,12 +20,15 @@ from torch.utils.data import Dataset
 
 class CNNDailyMailDataset(Dataset):
 
-    def __init__(self, data_dir, split, tokenizer):
+    def __init__(self, data_dir, split, tokenizer, ratio=None):
         self.data_dir = data_dir
         self.split = split
         self.tokenizer = tokenizer
 
         self.data = self.load_data()
+
+        if ratio is not None:
+            self.data = self.data[:int(len(self.data) * ratio)]
 
     def __len__(self):
         return len(self.data)

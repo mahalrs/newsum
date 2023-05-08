@@ -49,7 +49,7 @@ parser.add_argument('--val_batch',
                     help='Validation batch size')
 parser.add_argument('--test_batch', default=2, type=int, help='Test batch size')
 parser.add_argument('--num_workers',
-                    default=32,
+                    default=2,
                     type=int,
                     help='Number of dataloader workers to use')
 parser.add_argument('--accelerator',
@@ -59,7 +59,7 @@ parser.add_argument('--strategy',
                     default='auto',
                     help='Strategy to use for training')
 parser.add_argument('--devices',
-                    default=4,
+                    default=1,
                     type=int,
                     help='Number of devices (cpu/gpu/tpu) to use for training.')
 parser.add_argument('--epochs',

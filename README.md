@@ -21,6 +21,24 @@ python process_data.py
 ```
 
 
+## Hyperparameter Search
+
+To run hyperparameter search, first login to wandb:
+
+```sh
+# When prompted, enter your wandb API key
+wandb.login()
+```
+
+Now run random hyperparameter search:
+
+```sh
+python search_hyperparams.py --run_name exp1 --wandb_proj my_proj
+```
+
+NOTE: If you get a `RuntimeError: tensorflow/compiler/xla/xla_client/computation_client.cc:280 : Missing XLA configuration` error on GCP, just do `pip uninstall torch_xla`.
+
+
 ## Fine-tune
 
 To start fine-tuning, run the following command.
