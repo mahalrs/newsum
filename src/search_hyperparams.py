@@ -45,11 +45,11 @@ parser.add_argument('--data_ratio',
                     type=float,
                     help='Ratio of data to use for hyperparameter search')
 parser.add_argument('--train_batch',
-                    default=2,
+                    default=4,
                     type=int,
                     help='Train batch size')
 parser.add_argument('--val_batch',
-                    default=2,
+                    default=4,
                     type=int,
                     help='Validation batch size')
 parser.add_argument('--num_workers',

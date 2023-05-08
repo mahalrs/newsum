@@ -40,14 +40,14 @@ parser.add_argument('--config',
                     default='./config/pegasus.json',
                     help='Path to config json file')
 parser.add_argument('--train_batch',
-                    default=2,
+                    default=4,
                     type=int,
                     help='Train batch size')
 parser.add_argument('--val_batch',
-                    default=2,
+                    default=4,
                     type=int,
                     help='Validation batch size')
-parser.add_argument('--test_batch', default=2, type=int, help='Test batch size')
+parser.add_argument('--test_batch', default=4, type=int, help='Test batch size')
 parser.add_argument('--num_workers',
                     default=2,
                     type=int,
