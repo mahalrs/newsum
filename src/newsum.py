@@ -71,7 +71,7 @@ class NewSum(pl.LightningModule):
                  logger=True,
                  sync_dist=True)
 
-        return {f'{phase}_loss': loss}
+        return loss
 
     def configure_optimizers(self):
         optimizer = torch.optim.AdamW(self.model.parameters(),
