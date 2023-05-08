@@ -67,6 +67,10 @@ parser.add_argument('--epochs',
                     default=1,
                     type=int,
                     help='Number of epochs to train')
+parser.add_argument('--run_cap',
+                    default=20,
+                    type=int,
+                    help='Number of sweep runs')
 parser.add_argument('--log_every_n_steps',
                     default=100,
                     type=int,
@@ -184,7 +188,7 @@ def main():
     sweep_id = wandb.sweep(sweep_config, project=args.wandb_proj)
 
     # Run sweep
-    wandb.agent(sweep_id, run_sweep)
+    wandb.agent(sweep_id, run_sweep, count=args.run_cap)
 
 
 if __name__ == '__main__':
