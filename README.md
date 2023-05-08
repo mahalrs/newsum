@@ -21,6 +21,22 @@ python process_data.py
 ```
 
 
+## Hyperparameter Search
+
+To run hyperparameter search, first login to wandb:
+
+```sh
+# When prompted, enter your wandb API key
+wandb.login()
+```
+
+Now run random hyperparameter search:
+
+```sh
+python search_hyperparams.py --run_name exp1 --wandb_proj my_proj
+```
+
+
 ## Fine-tune
 
 To start fine-tuning, run the following command.
