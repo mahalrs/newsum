@@ -20,7 +20,7 @@ import wandb
 
 from torch.utils.data import DataLoader
 from lightning.pytorch import seed_everything
-from lightning.pytorch.loggers import WandbLogger
+from lightning.pytorch.loggers import TensorBoardLogger
 from transformers import AutoTokenizer
 
 from data import CNNDailyMailDataset
@@ -30,6 +30,9 @@ parser = argparse.ArgumentParser()
 parser.add_argument('--data_dir',
                     default='./data/cnn_dailymail',
                     help='Directory containing processed dataset')
+parser.add_argument('--log_dir',
+                    default='./logs',
+                    help='Directory to save logs and checkpoints')
 parser.add_argument('--run_name', default='pegasus', help='Sweep name to use')
 parser.add_argument('--wandb_proj',
                     default='newsum',
@@ -50,7 +53,7 @@ parser.add_argument('--val_batch',
                     type=int,
                     help='Validation batch size')
 parser.add_argument('--num_workers',
-                    default=32,
+                    default=2,
                     type=int,
                     help='Number of dataloader workers to use')
 parser.add_argument('--accelerator',
@@ -60,7 +63,7 @@ parser.add_argument('--strategy',
                     default='auto',
                     help='Strategy to use for training')
 parser.add_argument('--devices',
-                    default=4,
+                    default=1,
                     type=int,
                     help='Number of devices (cpu/gpu/tpu) to use for training.')
 parser.add_argument('--epochs',
@@ -143,7 +146,7 @@ def main():
     train_loader, val_loader = get_data_loaders(args, tokenizer)
 
     # Initialize wandb logger
-    logger = WandbLogger(project=args.wandb_proj)
+    logger = TensorBoardLogger(args.log_dir, name=args.run_name)
 
     # Get sweep config
     sweep_config = get_sweep_config(args.run_name)

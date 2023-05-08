@@ -14,6 +14,7 @@
 
 import torch
 import lightning.pytorch as pl
+import wandb
 
 from transformers import AutoModelForSeq2SeqLM, get_linear_schedule_with_warmup
 
@@ -30,6 +31,11 @@ class NewSum(pl.LightningModule):
         self.weight_decay = config['weight_decay']
         self.warmup_steps = config['warmup_steps']
         self.training_steps = config['training_steps']
+
+        if config['wandb']:
+            self.wandb_logger = True
+        else:
+            self.wandb_logger = False
 
     def forward(self, input_ids, attention_mask, labels):
         return self.model(input_ids=input_ids,
@@ -48,12 +54,16 @@ class NewSum(pl.LightningModule):
     def test_step(self, batch, batch_idx):
         return self._shared_step(batch, 'test')
 
-    def _shared_step(self, batch, split):
+    def _shared_step(self, batch, phase):
         input_ids, attention_mask, targets = batch
         outputs = self(input_ids, attention_mask, targets)
 
         loss = outputs.loss
-        self.log(f'{split}_loss',
+
+        if self.global_rank == 0 and self.wandb_logger:
+            wandb.log({f'{phase}_loss': loss})
+
+        self.log(f'{phase}_loss',
                  loss,
                  on_step=True,
                  on_epoch=True,
@@ -61,7 +71,7 @@ class NewSum(pl.LightningModule):
                  logger=True,
                  sync_dist=True)
 
-        return loss
+        return {f'{phase}_loss': loss}
 
     def configure_optimizers(self):
         optimizer = torch.optim.AdamW(self.model.parameters(),
