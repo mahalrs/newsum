@@ -32,7 +32,7 @@ class NewSum(pl.LightningModule):
         self.warmup_steps = config['warmup_steps']
         self.training_steps = config['training_steps']
 
-        if config['wandb']:
+        if 'wandb' in config and config['wandb']:
             self.wandb_logger = True
         else:
             self.wandb_logger = False

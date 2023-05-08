@@ -169,6 +169,7 @@ def main():
                 'weight_decay': config.weight_decay,
                 'warmup_steps': warmup_steps,
                 'training_steps': total_steps,
+                'wandb': True
             }
 
             # Initialize model
