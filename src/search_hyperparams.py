@@ -145,9 +145,6 @@ def main():
     # Load data loaders
     train_loader, val_loader = get_data_loaders(args, tokenizer)
 
-    # Initialize wandb logger
-    logger = TensorBoardLogger(args.log_dir, name=args.run_name)
-
     # Get sweep config
     sweep_config = get_sweep_config(args.run_name)
 
@@ -174,6 +171,9 @@ def main():
 
             # Initialize model
             model = NewSum(model_config)
+
+            # Initialize logger
+            logger = TensorBoardLogger(args.log_dir, name=args.run_name)
 
             # Define trainer
             trainer = pl.Trainer(max_epochs=args.epochs,
