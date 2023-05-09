@@ -82,7 +82,7 @@ def get_tokenizer(model_name, data_dir):
 
     with open(os.path.join(data_dir, 'special_tokens.json'), 'r') as f:
         special_tokens = json.load(f)
-        tok.add_special_tokens(special_tokens)
+        tok.add_special_tokens({'additional_special_tokens': special_tokens})
 
     return tok
 
