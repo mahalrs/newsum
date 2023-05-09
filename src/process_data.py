@@ -99,7 +99,6 @@ def main():
     device = 'cuda' if torch.cuda.is_available() else 'cpu'
     if torch.backends.mps.is_available():
         device = 'mps'
-    device = torch.device(device)
     print(device)
 
     assert os.path.exists(args.datafiles), f'{args.datafiles} does not exist.'
