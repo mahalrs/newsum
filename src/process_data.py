@@ -16,8 +16,11 @@ import argparse
 import json
 import os
 
+import torch
+
 from datasets import load_dataset
 from lightning.pytorch import seed_everything
+from transformers import AutoTokenizer, AutoModelForTokenClassification, pipeline
 
 parser = argparse.ArgumentParser()
 parser.add_argument('--datafiles',
@@ -29,13 +32,34 @@ parser.add_argument('--data_root',
 parser.add_argument('--seed', default=123, type=int, help='Random seed to use')
 
 
-def process_cnn_dailymail(datafiles, data_root):
+def perform_ner(ner_pipeline, text):
+    out = ner_pipeline(text)
+
+    special_tokens = set()
+    new_text = ''
+    last_idx = 0
+
+    for entity in out:
+        new_text += text[last_idx:entity['start']]
+        new_text += f"<{entity['entity']}>" + text[
+            entity['start']:entity['end']] + f"</{entity['entity']}>"
+        last_idx = entity['end']
+
+        special_tokens.add(f"<{entity['entity']}>")
+        special_tokens.add(f"</{entity['entity']}>")
+    new_text += text[last_idx:]
+
+    return new_text, special_tokens
+
+
+def process_cnn_dailymail(datafiles, data_root, ner_pipe):
     out_dir = os.path.join(data_root, 'cnn_dailymail')
     for split in ['train', 'validation', 'test']:
         if not os.path.exists(os.path.join(out_dir, split)):
             os.makedirs(os.path.join(out_dir, split))
 
     dataset = load_dataset('cnn_dailymail', '3.0.0')
+    special_tokens = set()
 
     for split in ['train', 'validation', 'test']:
         # Create a file containing all the ids for the split
@@ -46,13 +70,24 @@ def process_cnn_dailymail(datafiles, data_root):
         for i in range(dataset[split].num_rows):
             sample = dataset[split][i]
             idx = sample['id']
+
+            # Perform NER on the article
+            article_ner, special_tokens_new = perform_ner(
+                ner_pipe, sample['article'])
+            special_tokens.update(special_tokens_new)
+
             with open(os.path.join(out_dir, split, f'{idx}.json'), 'w') as f:
                 json.dump(
                     {
                         'id': idx,
                         'article': sample['article'],
+                        'article_ner': article_ner,
                         'summary': sample['highlights']
                     }, f)
+
+    # Save special tokens
+    with open(os.path.join(out_dir, 'special_tokens.json'), 'w') as f:
+        json.dump(list(special_tokens), f)
 
 
 def main():
@@ -60,6 +95,12 @@ def main():
 
     # Set the random seed for reproducible experiments
     seed_everything(args.seed, workers=True)
+
+    device = 'cuda' if torch.cuda.is_available() else 'cpu'
+    if torch.backends.mps.is_available():
+        device = 'mps'
+    device = torch.device(device)
+    print(device)
 
     assert os.path.exists(args.datafiles), f'{args.datafiles} does not exist.'
     assert os.path.isdir(
@@ -69,8 +110,18 @@ def main():
     if not os.path.exists(args.data_root):
         os.makedirs(args.data_root)
 
+    # Load NER pipeline
+    tokenizer = AutoTokenizer.from_pretrained('dslim/bert-base-NER')
+    model = AutoModelForTokenClassification.from_pretrained(
+        'dslim/bert-base-NER').to(device)
+    ner_pipe = pipeline('ner',
+                        model=model,
+                        tokenizer=tokenizer,
+                        framework='pt',
+                        device=device)
+
     # Process CNN/DailyMail dataset
-    process_cnn_dailymail(args.datafiles, args.data_root)
+    process_cnn_dailymail(args.datafiles, args.data_root, ner_pipe)
 
     # Process XSum dataset
     # process_xsum(args.datafiles, args.data_root)

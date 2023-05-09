@@ -20,10 +20,11 @@ from torch.utils.data import Dataset
 
 class CNNDailyMailDataset(Dataset):
 
-    def __init__(self, data_dir, split, tokenizer, ratio=None):
+    def __init__(self, data_dir, split, tokenizer, ratio=None, extended=False):
         self.data_dir = data_dir
         self.split = split
         self.tokenizer = tokenizer
+        self.extended = extended
 
         self.data = self.load_data()
 
@@ -39,7 +40,10 @@ class CNNDailyMailDataset(Dataset):
 
         with open(file_path, 'r') as f:
             sample = json.load(f)
-            inputs = self.tokenizer(sample['article'],
+            article = sample['article_ner'] if self.extended else sample[
+                'article']
+
+            inputs = self.tokenizer(article,
                                     max_length=256,
                                     truncation=True,
                                     padding='max_length',

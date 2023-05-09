@@ -39,6 +39,10 @@ parser.add_argument('--exp_name',
 parser.add_argument('--config',
                     default='./config/pegasus.json',
                     help='Path to config json file')
+parser.add_argument('--extended',
+                    default=False,
+                    type=bool,
+                    help='Whether to use additional content features')
 parser.add_argument('--train_batch',
                     default=4,
                     type=int,
@@ -73,6 +77,16 @@ parser.add_argument('--log_every_n_steps',
 parser.add_argument('--seed', default=123, type=int, help='Random seed to use')
 
 
+def get_tokenizer(model_name, data_dir):
+    tok = AutoTokenizer.from_pretrained(model_name)
+
+    with open(os.path.join(data_dir, 'special_tokens.json'), 'r') as f:
+        special_tokens = json.load(f)
+        tok.add_special_tokens(special_tokens)
+
+    return tok
+
+
 def main():
     args = parser.parse_args()
 
@@ -87,7 +101,7 @@ def main():
         config = json.load(f)
 
     # Load tokenizer
-    tokenizer = AutoTokenizer.from_pretrained(config['model_name'])
+    tokenizer = get_tokenizer(config['model_name'], args.data_dir)
 
     # Load dataset
     assert os.path.exists(args.data_dir), f'{args.data_dir} does not exist.'
@@ -95,7 +109,8 @@ def main():
 
     train_dataset = CNNDailyMailDataset(args.data_dir,
                                         split='train',
-                                        tokenizer=tokenizer)
+                                        tokenizer=tokenizer,
+                                        extended=args.extended)
     train_loader = DataLoader(train_dataset,
                               batch_size=args.train_batch,
                               shuffle=(not args.devices > 1),
@@ -104,7 +119,8 @@ def main():
 
     val_dataset = CNNDailyMailDataset(args.data_dir,
                                       split='validation',
-                                      tokenizer=tokenizer)
+                                      tokenizer=tokenizer,
+                                      extended=args.extended)
     val_loader = DataLoader(val_dataset,
                             batch_size=args.val_batch,
                             shuffle=False,
@@ -113,7 +129,8 @@ def main():
 
     test_dataset = CNNDailyMailDataset(args.data_dir,
                                        split='test',
-                                       tokenizer=tokenizer)
+                                       tokenizer=tokenizer,
+                                       extended=args.extended)
     test_loader = DataLoader(test_dataset,
                              batch_size=args.train_batch,
                              shuffle=False,
