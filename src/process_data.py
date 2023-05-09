@@ -96,7 +96,7 @@ def main():
     # Set the random seed for reproducible experiments
     seed_everything(args.seed, workers=True)
 
-    device = 'cuda' if torch.cuda.is_available() else 'cpu'
+    device = 'cuda:0' if torch.cuda.is_available() else 'cpu'
     if torch.backends.mps.is_available():
         device = 'mps'
     print(device)
