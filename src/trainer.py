@@ -115,7 +115,7 @@ def main():
                                        split='test',
                                        tokenizer=tokenizer)
     test_loader = DataLoader(test_dataset,
-                             batch_size=args.train_batch,
+                             batch_size=args.test_batch,
                              shuffle=False,
                              num_workers=args.num_workers,
                              pin_memory=True)

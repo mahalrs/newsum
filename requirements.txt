@@ -6,3 +6,6 @@ tqdm
 sentencepiece
 tensorboard
 wandb
+evaluate
+nltk
+rouge_score
