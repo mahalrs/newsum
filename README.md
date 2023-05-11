@@ -257,6 +257,15 @@ python eval.py
 ```
 
 
+### Visualization
+
+By default, each experiment will stores stores logs to `logs` directory. To visualize in Tensorboard, run:
+
+```sh
+tensorboard --logdir ./logs
+```
+
+
 ## Results
 
 <img src="./assets/sweep_results.png">
