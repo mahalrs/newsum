@@ -96,31 +96,12 @@ def main():
     train_dataset = CNNDailyMailDataset(args.data_dir,
                                         split='train',
                                         tokenizer=tokenizer,
-                                        ratio=0.05) # 5% of the dataset
+                                        ratio=0.05)
     train_loader = DataLoader(train_dataset,
                               batch_size=args.train_batch,
                               shuffle=(not args.devices > 1),
                               num_workers=args.num_workers,
                               pin_memory=True)
-
-    val_dataset = CNNDailyMailDataset(args.data_dir,
-                                      split='validation',
-                                      tokenizer=tokenizer)
-    val_loader = DataLoader(val_dataset,
-                            batch_size=args.val_batch,
-                            shuffle=False,
-                            num_workers=args.num_workers,
-                            pin_memory=True)
-
-    test_dataset = CNNDailyMailDataset(args.data_dir,
-                                       split='test',
-                                       tokenizer=tokenizer,
-                                       ratio=0.05)
-    test_loader = DataLoader(test_dataset,
-                             batch_size=args.train_batch,
-                             shuffle=False,
-                             num_workers=args.num_workers,
-                             pin_memory=True)
 
     # Calculate warmup and total steps
     assert args.devices > 0, 'Number of devices must be greater than 0.'
@@ -147,11 +128,7 @@ def main():
 
     # Train model
     trainer.fit(model,
-                train_dataloaders=train_loader,
-                val_dataloaders=val_loader)
-
-    # Test model
-    trainer.test(model, dataloaders=test_loader)
+                train_dataloaders=train_loader)
 
 
 if __name__ == '__main__':
